@@ -55,7 +55,7 @@ class EarthquakeDashboard:
             'starttime': start_time
         }
         usgs_url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
-        response = requests.get(usgs_url, params=params)
+        response = requests.get(usgs_url, params=params, timeout=10)
         if response.status_code == 200:
             data = response.json()
             processed_events = []
