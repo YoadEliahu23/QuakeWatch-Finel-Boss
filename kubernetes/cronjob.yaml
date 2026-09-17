@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: quakewatch-health-check
+spec:
+  schedule: "*/5 * * * *"
+
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: health-check
+              image: curlimages/curl:latest
+              command:
+                - curl
+                - -f
+                - http://quakewatch-service:5000/health
+
+          restartPolicy: OnFailure

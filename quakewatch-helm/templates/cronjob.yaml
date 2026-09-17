@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.cronJob.name }}
+spec:
+  schedule: {{ .Values.cronJob.schedule | quote  }}
+  suspend: {{ .Values.cronJob.suspend }}
+  jobTemplate:
+      spec:
+        template:
+          spec:
+            containers:
+              - name: health-check
+                image: "{{ .Values.cronJob.image.repository }}:{{ .Values.cronJob.image.tag}}"
+                command:
+                  - curl
+                  - -f
+                  - "http://{{ include "quakewatch-helm.fullname" . }}:{{ .Values.service.port }}/health"
+            restartPolicy: {{ .Values.cronJob.restartPolicy }}
