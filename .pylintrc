@@ -453,6 +453,8 @@ disable=raw-checker-failed,
         wrong-import-position, 
         line-too-long,
         too-many-locals,
+        import-outside-toplevel,
+        logging-fstring-interpolation,
         redefined-outer-name,
         no-else-return
 
