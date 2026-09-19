@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/YoadEliahu23/QuakeWatch-Finel-Boss.git
-    targetRevision: gitops
+    targetRevision: main
     path: quakewatch-helm
   destination:
     namespace: default
