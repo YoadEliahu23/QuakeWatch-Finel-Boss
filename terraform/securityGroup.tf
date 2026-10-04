@@ -16,7 +16,9 @@ resource "aws_security_group_rule" "allow_http" {
   to_port           = 80
   protocol          = "tcp"
   security_group_id = aws_security_group.this.id
-  cidr_blocks       = ["${trimspace(data.http.myip.response_body)}/32"]
+  # -- My IP only
+  #   cidr_blocks       = ["${trimspace(data.http.myip.response_body)}/32"]  
+  cidr_blocks = ["0.0.0.0/0"]
 }
 
 resource "aws_security_group_rule" "allow_ssh" {
