@@ -1,146 +1,171 @@
-![Screenshot of QuakeWatch](static/experts-logo.svg)
+# QuakeWatch - DevOps Final Project
 
-# QuakeWatch
+QuakeWatch is a Python/Flask application that displays earthquake data.
 
-**QuakeWatch** is a Flask-based web application designed to display real-time and historical earthquake data. It visualizes earthquake statistics with interactive graphs and provides detailed information sourced from the USGS Earthquake API. Built using an object‑oriented design and modular structure, QuakeWatch separates templates, utility functions, and route definitions, making it both scalable and maintainable. The application is also containerized with Docker for easy deployment.
+> **Note:** The application itself was not developed by me. The original application was used as the base for this project.  
+> My work focused on building the **DevOps infrastructure and deployment process around the application**.
 
-## Features
+---
 
-- **Real-Time & Historical Data:** Fetches earthquake data from the USGS API.
-- **Interactive Graphs:** Displays earthquake counts over various time periods (e.g., last 30 days, 5-year view) using Matplotlib.
-- **Top Earthquake Events:** Shows the top 5 worldwide earthquakes (last 30 days) by magnitude.
-- **Recent Earthquake Details:** Highlights the most recent earthquake event.
-- **RESTful Endpoints:** Provides endpoints for health checks, status, connectivity tests, and raw data.
-- **Clean UI:** Built with Bootstrap 5, featuring a professional navigation bar with a logo.
-- **Dockerized:** Easily containerized for streamlined deployment.
+## Project Overview
 
-## Project Structure
+The goal of this project was to take an existing application and build a complete DevOps workflow around it — from containerization to automated deployment on AWS.
 
-```
-QuakeWatch/
-├── app.py                  # Application factory and entry point
-├── dashboard.py            # Blueprint & route definitions using OOP style
-├── utils.py                # Helper functions and custom Jinja2 filters
-├── requirements.txt        # Python dependencies
-├── static/
-│   └── experts-logo.svg    # Logo file used in the UI
-└── templates/              # Jinja2 HTML templates
-    ├── base.html           # Base template with common layout and navigation
-    ├── main_page.html      # Home page content
-    └── graph_dashboard.html# Dashboard view with graphs and earthquake details
-```
+### Technologies
 
-## Installation
+- Docker & Docker Compose
+- Kubernetes
+- Helm
+- GitHub Actions
+- Docker Hub
+- Argo CD
+- Terraform
+- AWS EC2
+- K3s
+- Traefik
 
-### Locally
+---
 
-1. **Clone the Repository:**
+## Architecture
 
-   ```bash
-   git clone https://github.com/yourusername/QuakeWatch.git
-   cd QuakeWatch
-   ```
-
-2. **Set Up a Virtual Environment (optional but recommended):**
-
-   ```bash
-   python -m venv venv
-   source venv/bin/activate   # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install Dependencies:**
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Running the Application Locally
-
-1. **Start the Flask Application:**
-
-   ```bash
-   python app.py
-   ```
-
-2. **Access the Application:**
-
-   Open your browser and visit [http://127.0.0.1:5000](http://127.0.0.1:5000) to view the dashboard.
-
-
-## Custom Jinja2 Filter
-
-The project includes a custom filter `timestamp_to_str` that converts epoch timestamps to human-readable strings. This filter is registered during application initialization and is used in the templates to format earthquake event times.
-
-## Known Issues
-
-- **SSL Warning:** You might see a warning regarding LibreSSL when using urllib3. This is informational and does not affect the functionality of the application.
-- **Matplotlib Backend:** The application forces Matplotlib to use the `Agg` backend for headless rendering. Ensure this setting is applied before any Matplotlib imports to avoid GUI-related errors.
-
-
-# QuakeWatch
-
-QuakeWatch is a Flask application for monitoring earthquake data.
-
-## Docker
-
-### Prerequisites
-
-Make sure Docker and Docker Compose are installed and running.
-
-### Build the Docker Image
-
-From the QuakeWatch project directory, run:
-
-```bash
-docker build -t quakewatch:latest .
+```text
+Developer
+    |
+    v
+GitHub
+    |
+    +---- GitHub Actions ----> Docker Hub
+    |
+    v
+Argo CD / GitOps
+    |
+    v
+AWS EC2
+    |
+    v
+K3s
+    |
+    v
+Helm Deployment
+    |
+    v
+Traefik :80
+    |
+    v
+QuakeWatch
 ```
 
-### Run with Docker
+---
 
-Run the container and expose the application on port 5000:
+## What I Implemented
 
-```bash
-docker run -d -p 5000:5000 --name quakewatch quakewatch:latest
+### Docker
+
+Containerized the Flask application and created a Docker Compose configuration for local deployment.
+
+### Kubernetes
+
+Created Kubernetes resources for the application, including:
+
+- Deployment with multiple replicas
+- Service
+- ConfigMap & Secret
+- Liveness and readiness probes
+- Resource requests and limits
+- Horizontal Pod Autoscaler
+- CronJob
+
+### Helm
+
+Converted the Kubernetes configuration into a reusable Helm chart with configurable values.
+
+### CI/CD
+
+Created GitHub Actions workflows to:
+
+- Install dependencies
+- Run Pylint
+- Build the Docker image
+- Push the production image to Docker Hub after approved changes are merged
+
+### GitOps
+
+Used **Argo CD** to manage Kubernetes deployments from the Git repository using the GitOps approach.
+
+### AWS & Terraform
+
+Created the AWS infrastructure using Terraform, including:
+
+- VPC and networking
+- Security Group
+- EC2 instance
+- SSH access configuration
+
+### K3s & Traefik
+
+Installed K3s on the AWS EC2 instance and deployed QuakeWatch using the Helm chart.
+
+K3s's built-in Traefik ingress controller exposes the application through the EC2 public IP on HTTP port `80`.
+
+```text
+Internet
+   |
+   v
+EC2 Public IP :80
+   |
+   v
+Traefik
+   |
+   v
+Kubernetes Service
+   |
+   v
+QuakeWatch Pods :5000
 ```
 
-Open the application in your browser at:
+---
 
-`http://localhost:5000`
+## Repository Structure
 
-### Run with Docker Compose
-
-Start the application using Docker Compose:
-
-```bash
-docker compose up -d
+```text
+.github/workflows/   # CI/CD pipelines
+argocd/              # Argo CD / GitOps configuration
+kubernetes/          # Kubernetes manifests
+quakewatch-helm/     # Helm chart
+terraform/           # AWS infrastructure
+Dockerfile            # Container image
+docker-compose.yaml   # Local container deployment
 ```
 
-Check that the container is running:
+---
 
-```bash
-docker ps
+## DevOps Flow
+
+```text
+Code
+  |
+  v
+GitHub
+  |
+  v
+CI/CD
+  |
+  v
+Docker Image
+  |
+  v
+GitOps
+  |
+  v
+Kubernetes / K3s
+  |
+  v
+AWS EC2
 ```
 
-Open the application at:
+This project demonstrates the process of taking an existing application and building a complete **containerized, automated, reproducible, and cloud-hosted DevOps environment** around it.
 
-`http://localhost:5000`
+---
 
-To stop and remove the Compose containers:
-
-```bash
-docker compose down
-```
-
-## Docker Hub
-
-The Docker image can be pulled from Docker Hub with:
-
-```bash
-docker pull YOUR_DOCKERHUB_USERNAME/quakewatch:latest
-```
-
-Then run it with:
-
-```bash
-docker run -d -p 5000:5000 YOUR_DOCKERHUB_USERNAME/quakewatch:latest
-```
+**Yoad Eliahu**  
+DevOps Final Project
