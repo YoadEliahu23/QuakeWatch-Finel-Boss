@@ -37,7 +37,7 @@ class EarthquakeDashboard:
         app_info = {
             'name': 'Sample Flask App',
             'version': '1.0',
-            'author': 'Your Name',
+            'author': 'Yoad Eliahu',
             'description': 'A sample Flask application demonstrating multiple routes'
         }
         return jsonify(app_info), 200
